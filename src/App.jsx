@@ -5,16 +5,22 @@ import TodoList from "./components/TodoList.jsx";
 function App() {
     const [todos, setTodos] = React.useState([])
     const [todoValue, setTodoValue] = React.useState('')
+    const [error, setError] = React.useState('')
 
     function persistData(newList) {
         localStorage.setItem('todos', JSON.stringify({todos: newList}))
     }
 
     function handleAddTodos(newTodo) {
-        if (newTodo.trim()) {
-            const newTodoList = [...todos, newTodo]
+        const trimmed = newTodo.trim()
+
+        if (trimmed) {
+            const newTodoList = [...todos, trimmed]
             persistData(newTodoList)
             setTodos(newTodoList)
+            setError('')
+        } else {
+            setError('New ToDo item can not be empty.')
         }
     }
 
@@ -30,6 +36,7 @@ function App() {
         const valueToBeEdited = todos[index]
         setTodoValue(valueToBeEdited)
         handleDeleteTodo(index)
+        setError('')
     }
 
     React.useEffect(() => {
@@ -48,7 +55,13 @@ function App() {
 
     return (
     <>
-        <TodoInput todoValue={todoValue} setTodoValue={setTodoValue} handleAddTodos={handleAddTodos}/>
+        <TodoInput
+            todoValue={todoValue}
+            setTodoValue={setTodoValue}
+            handleAddTodos={handleAddTodos}
+            error={error}
+            setError={setError}
+        />
         <TodoList handleDeleteTodo={handleDeleteTodo} handleEditTodo={handleEditTodo} todos={todos} />
     </>
   )
